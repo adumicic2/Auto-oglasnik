@@ -1,22 +1,20 @@
 var express = require('express');
 var app = express();
 
-//const dbConfig = require("./db.config.js");
 var mysql = require('mysql');
 
 var bodyParser=require('body-parser');
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-// connection configurations
 var dbConn = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "pzi"
+    host: "ucka.veleri.hr",
+    port:3306,
+    user: "adumicic",
+    password: "11",
+    database: "adumicic"
     });
 
-// connect to database
 dbConn.connect(); 
 
 app.get("/podaci",function(request,response){
@@ -34,18 +32,16 @@ app.post("/podaci",function(request,response){
     var podaci=request.body.podatak;
     return response.send({message:podaci+" ok"});
 })
-///////////////////////////
-app.post("/korisnik",function(request,response){
-    
-    var ime=request.body.imep;
-    var prezime=request.body.prezimep;  
-    var tel=request.body.telp
 
-    //return response.send({message:"CREATE  "+ime+" "+prezime});
-    dbConn.query(`INSERT INTO korisnik(id,ime,prezime,tel) VALUES(NULL,?,?,?)`,[ime,prezime,tel], function
+app.post("/FOTOGRAFIJE/",function(request,response){
+    
+    var idf = request.body.idf;
+    var link = request.body.link;
+
+    dbConn.query(`INSERT INTO FOTOGRAFIJE(ID_oglasa,ID_fotografije,link_foto) VALUES(NULL,?,?)`,[idf, link], function
     (error, results, fields) {
     if (error) throw error;
-    return response.send({ error: false, data: results[0], message:'Unos novog korisnika '+ime+' '+prezime+' '+tel});
+    return response.send({ error: false, data: results[0], message:'Unos FOTKE '+link});
     });
 
 })
@@ -79,18 +75,18 @@ app.delete("/korisnik/:id",function(request,response){
 }) 
 
 
-app.get("/korisnik",function(request,response){
+app.get("/FOTOGRAFIJE/",function(request,response){
     
 
-    dbConn.query('SELECT * FROM korisnik', function (error, results, fields) {
+    dbConn.query('SELECT * FROM FOTOGRAFIJE', function (error, results, fields) {
         if (error) throw error;
-        return response.send({ error: false, data: results, message: 'READ svi korisnici.' });
+        return response.send({ error: false, data: results, message: 'READ sve fotografije.' });
 
         //return response.send({message:"READ korisnici"});
 })
 })
 
-app.get("/korisnik/:id",function(request,response){
+app.get("/FOTOGRAFIJE/:id",function(request,response){
     //var id=request.params.id;
     //return response.send({message:id+"READ korisnik "+id});
 
@@ -99,50 +95,13 @@ app.get("/korisnik/:id",function(request,response){
 if (!useful_part_id) {
 return response.status(400).send({ error: true, message: 'Please provideuseful_part_id' });
 }
-dbConn.query('SELECT * FROM korisnik WHERE id=?', useful_part_id, function
+dbConn.query('SELECT * FROM FOTOGRAFIJE WHERE ID_oglasa=?', useful_part_id, function
 (error, results, fields) {
 if (error) throw error;
-return response.send({ error: false, data: results[0], message:'READ korisnici sa ID-om '+useful_part_id});
+return response.send({ error: false, data: results[0], message:'READ fotke sa ID-om oglasa '+useful_part_id});
 });
 
 })
-
-// set port
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 app.listen(3000, function () {
     console.log('Node app is running on port 3000');
