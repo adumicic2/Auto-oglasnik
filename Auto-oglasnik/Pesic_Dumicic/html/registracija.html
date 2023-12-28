@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registracija</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+    <script>
+function func_zaporka(id) 
+{
+    var x = document.getElementById(id);
+    if (x.type === "password") {
+       x.type = "text";
+     } else {
+      x.type = "password";
+  }
+}
+
+let korisnikPostoji = true;
+let registracijauTijeku = false;
+const message = document.querySelector('#email-message');
+
+function updateLabel(korisnicko_ime) {
+    if (!registracijauTijeku)
+    {
+        if (!document.getElementById('ime').value || document.getElementById('ime').value === "")
+        {
+            document.getElementById('outputLabel').innerHTML = `<b>Username: </b>`;
+        }
+        else
+        {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `http://localhost:3000/checkusername/`, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = () => 
+        {
+            if (xhr.status === 200) 
+            {
+            const response = JSON.parse(xhr.responseText);
+
+                if (response.postojiKorisnik) 
+                {
+                    document.getElementById('outputLabel').innerHTML = `<b>Username: ${korisnicko_ime} se već koristi!</b>`;
+                    korisnikPostoji = true;
+                } 
+                else 
+                {
+                    document.getElementById('outputLabel').innerHTML = `<b>Username: ${korisnicko_ime} dostupan!</b>`;
+                    korisnikPostoji = false;
+                }
+            }
+            else
+            {  
+                document.getElementById('outputLabel').textContent = `Fail`;
+                alert("Fail status 200");
+            } 
+        };
+        xhr.onerror = () => {
+            alert("onerror fail");
+            document.getElementById('outputLabel').textContent = `OnError fail`;
+        };
+        xhr.send(JSON.stringify({ korisnicko_ime }));
+        }
+        
+    }      
+}
+function posaljikorisnika(korisnicko_ime, eposta, tel, lozinka)
+{
+    window.location.href="index.html";
+    const httpRequest = new XMLHttpRequest();
+    httpRequest.open("POST", "http://localhost:3000/KORISNIK/", true);
+    httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    httpRequest.send("username=" + korisnicko_ime + "&email=" + eposta + "&telefon=" + tel + "&sifra=" + lozinka);                 
+    alert("Uspješno ste registrirani!");
+    registracijauTijeku = false;
+}
+function provjeri(polje)
+{
+    event.preventDefault();
+    registracijauTijeku = true;
+    let sveprazno = new Boolean (false);
+    for (let i = 0; i < polje.length; i++)
+    {
+        let el = document.getElementById(polje[i]);
+        if(!el.value || el.value === "") 
+        {
+            sveprazno = true;
+            break;
+        }  
+    }
+    if (sveprazno === true)
+    {
+        alert("Ispunite sva polja!");
+        registracijauTijeku = false;
+    } 
+    else if (!document.getElementById(polje[2]).value.includes('@'))
+    {
+        alert("E-mail nije važeći!");
+        registracijauTijeku = false;
+    }
+    else if (document.getElementById(polje[3]).value !== document.getElementById(polje[4]).value)
+    {
+        alert("Lozinke se ne podudaraju!");
+        registracijauTijeku = false;
+    }
+    else if (korisnikPostoji)
+    {
+        alert("Potreban je drugi username!");
+        registracijauTijeku = false;
+    }
+    else
+    {       
+        let korisnicko_ime = document.getElementById(polje[0]).value;
+        let tel = document.getElementById(polje[1]).value;
+        let eposta = document.getElementById(polje[2]).value; 
+        let lozinka = document.getElementById(polje[3]).value;    
+        posaljikorisnika(korisnicko_ime, tel, eposta, lozinka);  
+    }      
+}
+                          
+    </script>
+</head>
+
+<body>
+    <div class="w3-container">
+        <nav class="navigacija" id="navigacija">
+            <div class="w3-bar w3-black">
+                <a href="../php/index.php" class="w3-bar-item w3-button">Početna stranica</a>
+                <a href="../php/sve_ponude.php" class="w3-bar-item w3-button">Sve ponude</a>
+                <a href="kontakt.html" class="w3-bar-item w3-button">Oglasi se</a>
+                <a href="../html/prijava.html" style="float: right" class ="w3-bar-item w3-button">Prijava</a>
+                <a href="registracija.html" style="float: right" class="w3-bar-item w3-button">Resetiraj registraciju</a>
+            </div>               
+        </nav>
+    </div>
+    <div class="w3-container">
+    <h1 class="w3-center">Registriraj se</h1>    
+
+    <h2 class="w3-center"><i>I oglasi svoj auto!</i></h2>
+
+    </div>
+    <div class="w3-container ">
+    <div class ="w3-card-2">
+        <form class="w3-teal w3-third w3-container w3-round-xlarge w3-display-middle" style="padding: 30px">
+        <label id="outputLabel" for=""><b>Korisničko ime:</b></label>
+        <input type="text" name="" id="ime" class="w3-input w3-border" oninput="updateLabel(this.value)">
+        <label for=""><b>Telefon:</b></label>
+        <input type="text" name="" id="tel" class="w3-input w3-border">
+        <label for=""><b>E-pošta:</b></label>
+        <input type="text"name="" id="email" class="w3-input w3-border">
+        <label for=""><b>Zaporka:</b></label>
+        <input type="password"name="" id="zaporka" class="w3-input w3-border">
+        <input style="float: right" type="checkbox" onclick="func_zaporka('zaporka')"><text  style="float: right">Prikaži</text>
+        <label for=""><b>Ponovite zaporku:</b></label>
+        <input type="password"name="" id="ponovizaporku" class="w3-input w3-border">
+        <input style="float: right" type="checkbox" onclick="func_zaporka('ponovizaporku')"><text  style="float: right">Prikaži</text>
+            <script>
+                const idevi = ["ime", "tel", "email", "zaporka", "ponovizaporku"];
+            </script>
+        <div class="w3-container w3-center" style="margin-bottom: 12px;"><button class="w3-button w3-black w3-ripple w3-btn w3-round-xxlarge" onclick="provjeri(idevi)">Pošalji!</button></div>
+        <div class="w3-container" style="text-align:center">
+            <label id="outputLabel" ">Već imate korisnički račun? <a href="../html/prijava.html" id="registrationLink">Prijavite se!</a></label>
+            </div>    
+    </form>
+    </div>
+</div>
+
+</body>
+</html>
