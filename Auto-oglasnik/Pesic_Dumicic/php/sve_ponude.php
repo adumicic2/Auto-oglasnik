@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web-shop mobitelii</title>
+    <title>Web oglasnik</title>
     <!-- link rel="stylesheet" href="../css/stil.css" -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
 
@@ -22,7 +22,7 @@
         </nav>
     </div>
     <div class="w3-container">
-    <h1>Web shop - mobiteli</h1>    
+    <h1>Web oglasnik</h1>    
     <p></p>
     <?php
       $server = "ucka.veleri.hr:3306";
