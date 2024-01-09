@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-shop mobiteli</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script>
+
+    var logiran = localStorage.getItem('localKorisnikID');
+    if(logiran === null)
+    {
+        window.location.href="../html/prijava.html";
+    }
+
+    function updateOpisLabel()
+    {
+        let opis_oglasa = document.getElementById("opis_oglasa").value;
+        if(opis_oglasa.length > 0)document.getElementById('brojiloZnakovaLabel').innerHTML = `<b>Opis automobila: ${opis_oglasa.length} / 1000</b>`;
+        else document.getElementById('brojiloZnakovaLabel').innerHTML = `<b>Opis automobila:</b>`;
+        
+    }
+    
+    </script>
+</head>
+
+<body>
+    <div class="w3-container">
+        <nav class="navigacija" id="navigacija">
+            <div class="w3-bar w3-black">
+                <a href="../php/index.php" class="w3-bar-item w3-button">Početna stranica</a>
+                <a href="../php/sve_ponude.php" class="w3-bar-item w3-button">Sve ponude</a>
+                <a href="../html/prijava.html" style="float: right" id="prijaodjava" class ="w3-bar-item w3-button">Prijava</a>
+                <a class="w3-bar-item" style="float: right;" id="vasUsername"></a>>
+                <script>
+                    var vasUsernameElement = document.getElementById('vasUsername');
+                    var prijavaElement = document.getElementById('prijaodjava');
+
+                    var lokalniKorisnikID = localStorage.getItem('localKorisnikID');
+                    var lokalniKorisnikIme = localStorage.getItem('localKorisnikIme');
+
+                    if (lokalniKorisnikID && lokalniKorisnikIme) {
+                    vasUsernameElement.textContent = `Korisnik: ${lokalniKorisnikIme} (${lokalniKorisnikID})`;
+                    prijavaElement.textContent = "Odjava";
+                    } else {
+                    vasUsernameElement.textContent = '';
+                    prijavaElement.textContent = "Prijava";
+                    }
+                </script>
+            </div>               
+        </nav>
+    </div>
+    <div class="w3-container">
+    <h1 class="w3-center">AutOglasnik</h1>    
+        <h2 class="w3-center">Pošalji svoj oglas!</h2>
+    </div>
+    <div class="w3-center">Recite nam što oglašavate!</div>
+    <div class="w3-container">
+    <div class="w3-card-2"> 
+        <form id=imageform class="w3-teal w3-third w3-container w3-display-middle w3-round-xlarge" enctype="multipart/form-data" style="padding: 30px; display: flex; flex-wrap: wrap;"">
+        
+        <label for=""><b>Naziv oglasa:</b></label>
+        <input type="text" name="" id="naziv_oglasa" class="w3-input w3-border" style="margin-bottom: 10px;">
+
+        <label for="image"><b>Slika:</b></label>
+        <input type="file" id="image" name="image" accept="image/*" class="w3-input w3-border">
+
+        <label for="" id="brojiloZnakovaLabel"><b>Opis automobila:</b></label>
+        <textarea name="" id="opis_oglasa" class="w3-input w3-border" style="height: 100px; margin-bottom: 10px" oninput="updateOpisLabel()"></textarea>  
+            <script>
+                updateOpisLabel();
+            </script>
+        <label for=""><b>Marka: </b></label>
+        <input type="text" name="" id="marka" class="w3-input w3-border" style="flex: 1; width: 200px; margin-bottom: 10px; margin-right: 10px;">
+
+        <label for=""><b>Model: </b></label>
+        <input type="text" name="" id="model" class="w3-input w3-border" style="flex: 1; width: 200px; margin-bottom: 10px">
+
+        <label for=""><b>Godište: </b></label>
+        <input type="number" name="" id="godiste" class="w3-input w3-border" style="flex: 1; width: 200px; margin-bottom: 10px; margin-right: 10px; ">
+
+        <label for=""><b>Kilometri: </b></label>
+        <input type="number" name="" id="km" class="w3-input w3-border" style="flex: 1; width:200px; margin-bottom: 10px">
+        
+        <script>
+            const idjevi = ["naziv_oglasa", "opis_oglasa", "marka", "model", "godiste", "km"];
+        </script>
+        
+        <div class="w3-container w3-center" style="flex:1">
+            <button class="w3-button w3-black w3-ripple w3-btn w3-round-xxlarge"onclick="provjeriPolja(idjevi)"  style="width: 20%; align-self: center;">Pošalji!</button>
+        </div>
+        <script>
+    function provjeriPolja(polje)
+    {
+        event.preventDefault();
+        let sveprazno = new Boolean (false);
+        for (let i = 0; i < polje.length; i++)
+        {              
+            let el = document.getElementById(polje[i]);
+            if(!el.value || el.value === "") 
+            {
+                sveprazno = true;
+                break;
+            }
+        }
+
+        if (sveprazno === true)
+        {
+            alert("Ispunite sva polja!");
+        }
+        else 
+        {
+            let ID_korisnik = localStorage.getItem('localKorisnikID');
+            let naziv_oglasa = document.getElementById(polje[0]).value;
+            let opis_oglasa = document.getElementById(polje[1]).value;
+            let marka = document.getElementById(polje[2]).value;
+            let model = document.getElementById(polje[3]).value;
+            let godiste = document.getElementById(polje[4]).value;
+            let km = document.getElementById(polje[5]).value;
+
+            if (godiste <= 1910 || godiste >= 2024)
+            {
+                alert("Nevazece godiste!");
+            }
+            else if (naziv_oglasa.length > 40 ||marka.length > 40 ||model.length > 40)
+            {
+                alert("Unijeli ste previse znakova!");
+            }
+            else if (km < 0 || km >= 2000000)
+            {
+                alert("Nevazeca kilometraza!");
+            } 
+            else if (opis_oglasa.length > 1000)
+            {
+                alert(`Unijeli ste prevelik opis (${opis_oglasa.length} / 1000)`);
+            } 
+            else
+            {
+                const httpRequ = new XMLHttpRequest();
+                httpRequ.open("POST", "http://localhost:3000/posaljioglas/", true);
+                httpRequ.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                httpRequ.send("ID_korisnik=" + ID_korisnik + "&naziv_oglasa=" + naziv_oglasa + "&marka=" + marka + "&model=" + model + "&godiste=" + godiste + "&km=" + km + "&opis_oglasa=" + opis_oglasa );
+                var uploadSlika = document.getElementById("image");
+                if (uploadSlika.files.length > 0)            
+                {
+                    const formData = new FormData();
+                    const file = uploadSlika.files[0];
+                        //if(uploadSlika.files[i].type === "image/png" || uploadSlika.files[i].type === "image.jpg" || uploadSlika.files[i].type === "image.jpeg")
+                    formData.append("file", file);    
+                            
+                    const httpReques = new XMLHttpRequest();
+                    httpReques.open("POST", "http://localhost:3000/FOTOGRAFIJE/", true);      
+                    httpReques.send(formData);
+                }
+                else alert("no image selected!");    
+                alert("Uspjesno ste predali oglas!");         
+                document.getElementById('imageform').reset();
+                updateOpisLabel();
+            }
+        }
+            
+    }
+        </script>
+        </form>
+    </div>
+</div>
+</body>
+</html>

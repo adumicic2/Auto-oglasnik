@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prijavi se</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+    <script>
+
+var logiranKor = localStorage.getItem('localKorisnikID');
+    if(logiranKor !== null)
+    {
+        const confirmation = window.confirm("Želite li se odjaviti?");
+        if (confirmation) {
+        
+        localStorage.removeItem('localKorisnikID');
+        localStorage.removeItem('localKorisnikIme');
+        alert("Uspješno ste odjavljeni.");
+
+    } else {
+        window.history.back();
+    }
+    }
+
+function func_zaporka(id) 
+{
+    var x = document.getElementById(id);
+    if (x.type === "password") 
+    {
+       x.type = "text";
+    }
+    else 
+    {
+      x.type = "password";
+    }
+}
+let korisnikPostoji = false;
+
+
+function prijavi(polje)
+{
+    event.preventDefault();
+    let sveprazno = new Boolean (false);
+    for (let i = 0; i < polje.length; i++)
+    {
+        let el = document.getElementById(polje[i]);
+        if(!el.value || el.value === "") 
+        {
+            sveprazno = true;
+            break;
+        }  
+    }
+    if (sveprazno === true)
+    {
+        alert("Ispunite sva polja!");
+    }
+    else
+    {
+        let korisnicko_imence = document.getElementById(polje[0]).value;
+        let sifrica = document.getElementById(polje[1]).value;
+
+        const data =
+        {
+            korisnicko_ime: korisnicko_imence,
+            sifra: sifrica
+        };
+
+        const xhreq = new XMLHttpRequest();
+        xhreq.open('POST', `http://localhost:3000/checkLogin/`, true);
+        xhreq.setRequestHeader('Content-Type', 'application/json');
+        xhreq.onload = () => 
+        {
+            if (xhreq.status === 200) 
+            {
+            const response = JSON.parse(xhreq.responseText);
+
+                if (response.logiran) 
+                {
+                    const ID_korisnika = response.ID_korisnika;
+                    korisnikPostoji = true;
+                    alert(`Bravo logirani ste! Vaš ID je ${ID_korisnika}`);
+                    vasUsernameElement = document.getElementById('vasUsername');
+                    vasUsernameElement.textContent = `Username: ${korisnicko_imence} | (${ID_korisnika})`;
+                    localStorage.setItem('localKorisnikID', ID_korisnika);
+                    localStorage.setItem('localKorisnikIme', korisnicko_imence);
+                    //window.history.back(); U STRANICI OSTANES IZLOGIRAN AKO se ne refresha zato
+                    window.location.href="../php/index.php";             
+                } 
+                else 
+                {
+                    korisnikPostoji = false;
+                    alert("Lozinka i ime se ne podudaraju!");
+                }
+            }
+            else
+            {  
+                alert("Fail status 200");
+            } 
+        };
+        xhreq.onerror = () => {
+            alert("OnError fail");
+        };
+        xhreq.send(JSON.stringify(data));
+    } 
+}
+    </script>
+</head>
+
+<body>
+    <div class="w3-container">
+        <nav class="navigacija" id="navigacija">
+            <div class="w3-bar w3-black">
+                <a href="../php/index.php" class="w3-bar-item w3-button">Početna stranica</a>
+                <a href="../php/sve_ponude.php" class="w3-bar-item w3-button">Sve ponude</a>
+                <a href="kontakt.html" class="w3-bar-item w3-button">Oglasi se</a>
+                <a class="w3-bar-item" style="float: right;" id="vasUsername"></a>>
+                <script>
+                    var vasUsernameElement = document.getElementById('vasUsername');
+
+                    var lokalniKorisnikID = localStorage.getItem('localKorisnikID');
+                    var lokalniKorisnikIme = localStorage.getItem('localKorisnikIme');
+
+                    if (lokalniKorisnikID && lokalniKorisnikIme) {
+                    vasUsernameElement.textContent = `Username: ${lokalniKorisnikIme} | (${lokalniKorisnikID})`;
+                    } else {
+                    vasUsernameElement.textContent = '';
+                    }
+                </script>
+            </div>               
+        </nav>
+    </div>
+    <div class="w3-container">
+    <h1 class="w3-center">Prijavi se</h1>    
+
+    <h2 class="w3-center"><i>Dobrodošao nazad!</i></h2>
+
+    </div>
+    <div class="w3-container ">
+    <div class ="w3-card-2">
+        <form class="w3-teal w3-third w3-container w3-round-xlarge w3-display-middle" style="padding: 30px">
+        <label id="outputLabel" for=""><b>Korisničko ime:</b></label>
+        <input type="text" name="" id="ime" class="w3-input w3-border">
+        <label for=""><b>Zaporka:</b></label>
+        <input type="password"name="" id="zaporka" class="w3-input w3-border">
+        <input style="float: right" type="checkbox" onclick="func_zaporka('zaporka')"><text  style="float: right">Prikaži</text>          
+            <script>
+                const idevi = ["ime", "zaporka"];
+            </script>
+        <div class="w3-container w3-center"style="margin-bottom: 12px"><button class="w3-button w3-black w3-ripple w3-btn w3-round-xxlarge" onclick="prijavi(idevi)">Prijavi se!</button></div>
+        <div class="w3-container" style="text-align:center">
+        <label id="outputLabel" ">Još nemate korisnički račun? <a href="../html/registracija.html" id="registrationLink">Registrirajte se!</a></label>
+        </div>
+    </form>
+    </div>
+</div>
+
+</body>
+</html>
